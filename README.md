@@ -2,7 +2,7 @@
 
 **Curso:** Ingeniería de Requisitos  
 **Institución:** Universidad Pontificia Bolivariana  
-**Autores:** Lucas Acevedo Rubio y Natalia Castillo  
+**Autor:** Lucas Acevedo Rubio
 **Estado:** Entrega final  
 
 ## Propósito
