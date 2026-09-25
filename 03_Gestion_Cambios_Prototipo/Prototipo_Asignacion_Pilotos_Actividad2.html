@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prototipo - Academia de Operaciones Aéreas</title>
+<style>
+:root{--b:#0b6eb8;--bg:#f4f6f8;--text:#1f2937;--muted:#6b7280;--ok:#137a3a;--warn:#a55b00;--danger:#a21d1d}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+header{background:#fff;border-bottom:1px solid #d9dee5;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:20px;margin:0} header small{color:var(--muted)}
+.wrap{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 72px)}
+nav{background:#fff;border-right:1px solid #d9dee5;padding:18px}
+nav button{width:100%;text-align:left;border:0;background:transparent;padding:12px;border-radius:7px;margin-bottom:7px;cursor:pointer;font-weight:600}
+nav button.active,nav button:hover{background:#eaf4fb;color:var(--b)}
+main{padding:24px;max-width:1180px}
+.screen{display:none}.screen.active{display:block}
+h2{margin-top:0}.lead{color:var(--muted);margin-top:-6px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:#fff;border:1px solid #d9dee5;border-radius:10px;padding:16px}
+.stat{font-size:30px;font-weight:700;margin-top:8px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.btn{border:0;background:var(--b);color:#fff;border-radius:7px;padding:10px 14px;cursor:pointer;font-weight:700}
+.btn.secondary{background:#eef2f6;color:#25364a;border:1px solid #cdd5df}.btn.danger{background:var(--danger)}
+label{display:block;font-weight:700;margin:10px 0 6px}select,input{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;background:#fff}
+.alert{border-left:5px solid var(--danger);background:#fff0f0;padding:12px 14px;border-radius:7px;margin:12px 0}.alert.ok{border-color:var(--ok);background:#eefaf1}.alert.warn{border-color:var(--warn);background:#fff7e8}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #d9dee5;border-radius:8px;overflow:hidden}
+th,td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:14px}th{background:#eef3f7}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700}.critical{background:#ffe2e2;color:#8f1d1d}.high{background:#fff0cf;color:#7d5300}.approved{background:#e6f7eb;color:#176b35}.rejected{background:#fde7e7;color:#8c1b1b}
+.step{display:flex;gap:10px;align-items:center;margin:10px 0}.circle{width:30px;height:30px;border-radius:50%;background:#dbe7f1;display:flex;align-items:center;justify-content:center;font-weight:700}.done .circle{background:#dff3e5;color:var(--ok)}
+.toast{position:fixed;right:24px;bottom:24px;background:#1f2937;color:#fff;padding:14px 18px;border-radius:8px;display:none;max-width:360px}
+.small{font-size:12px;color:var(--muted)} .two{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+@media(max-width:800px){.wrap{grid-template-columns:1fr}nav{border-right:0;border-bottom:1px solid #ddd}.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Academia de Operaciones Aéreas</h1><small>Prototipo de baja fidelidad - Sistema de asignación de pilotos</small></div>
+  <div class="small">Actividad 2 - Unidad 3</div>
+</header>
+<div class="wrap">
+<nav>
+  <button class="active" data-target="dashboard">Inicio</button>
+  <button data-target="asignacion">Nueva asignación</button>
+  <button data-target="pilotos">Pilotos y puntuación</button>
+  <button data-target="notificaciones">Notificaciones</button>
+  <button data-target="certificacion">Certificación</button>
+</nav>
+<main>
+<section id="dashboard" class="screen active">
+  <h2>Panel principal</h2>
+  <p class="lead">Vista resumida de los cambios aprobados de mayor prioridad.</p>
+  <div class="grid">
+    <div class="card"><b>Alertas meteorológicas activas</b><div class="stat">1</div><span class="badge critical">Crítica</span></div>
+    <div class="card"><b>Asignaciones pendientes</b><div class="stat">3</div><span class="badge high">Alta</span></div>
+    <div class="card"><b>Notificaciones enviadas hoy</b><div class="stat">12</div><span class="badge approved">Automático</span></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3>Flujo recomendado</h3>
+    <div class="step done"><div class="circle">1</div><div><b>Seleccionar vuelo</b><div class="small">Consulta ruta, destino y alerta meteorológica.</div></div></div>
+    <div class="step"><div class="circle">2</div><div><b>Evaluar pilotos</b><div class="small">Promedio de 3 simulaciones + 30% experiencia real.</div></div></div>
+    <div class="step"><div class="circle">3</div><div><b>Confirmar asignación</b><div class="small">Solo pilotos elegibles y certificados NAC-2026.</div></div></div>
+    <div class="step"><div class="circle">4</div><div><b>Notificar</b><div class="small">Teams/Email en menos de 1 minuto.</div></div></div>
+  </div>
+  <div class="actions"><button class="btn" onclick="go('asignacion')">Crear nueva asignación</button></div>
+</section>
+
+<section id="asignacion" class="screen">
+  <h2>Nueva asignación</h2>
+  <p class="lead">Validación funcional de RFC-A1, RFC-B1, RFC-B2, RFC-C2 y RFC-A2.</p>
+  <div class="two">
+    <div class="card">
+      <label>Vuelo</label>
+      <select id="flight" onchange="flightChanged()">
+        <option value="">Seleccione...</option>
+        <option value="402">Vuelo 402 - Bogotá / Miami</option>
+        <option value="311">Vuelo 311 - Medellín / Cartagena</option>
+      </select>
+      <div id="weatherBox"></div>
+      <label>Piloto</label>
+      <select id="pilot"><option value="">Seleccione primero un vuelo</option></select>
+      <div id="pilotInfo" class="small" style="margin-top:8px"></div>
+      <div class="actions">
+        <button class="btn secondary" onclick="reviewPilot()">Revisar puntuación</button>
+        <button class="btn" onclick="assignPilot()">Confirmar asignación</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Criterios activos</h3>
+      <p><span class="badge critical">RFC-A1</span> Alerta Meteorológica antes de confirmar.</p>
+      <p><span class="badge high">RFC-B1</span> Promedio últimas 3 simulaciones.</p>
+      <p><span class="badge high">RFC-B2</span> Puntaje final = 70% simulación + 30% experiencia.</p>
+      <p><span class="badge critical">RFC-C2</span> Certificación por Estabilidad de Competencias.</p>
+      <p><span class="badge high">RFC-A2</span> Notificación automática tras guardar.</p>
+    </div>
+  </div>
+</section>
+
+<section id="pilotos" class="screen">
+  <h2>Pilotos y puntuación</h2>
+  <p class="lead">Los valores son datos simulados para validar la interfaz y la lógica propuesta.</p>
+  <table>
+    <thead><tr><th>Piloto</th><th>Últimas 3 simulaciones</th><th>Promedio</th><th>Exp. normalizada</th><th>Final 70/30</th><th>Certificación</th></tr></thead>
+    <tbody>
+      <tr><td>Laura Gómez</td><td>94, 92, 91</td><td>92.3</td><td>88</td><td>91.0</td><td><span class="badge approved">Estable</span></td></tr>
+      <tr><td>Andrés Rojas</td><td>89, 90, 88</td><td>89.0</td><td>96</td><td>91.1</td><td><span class="badge approved">Estable</span></td></tr>
+      <tr><td>Camilo Ruiz</td><td>98, 72, 75</td><td>81.7</td><td>70</td><td>78.2</td><td><span class="badge rejected">Inestable</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="notificaciones" class="screen">
+  <h2>Notificaciones</h2>
+  <p class="lead">Trazabilidad de envíos automáticos generados después de una asignación.</p>
+  <table id="notifTable">
+    <thead><tr><th>Fecha/Hora</th><th>Vuelo</th><th>Piloto</th><th>Canal</th><th>Estado</th></tr></thead>
+    <tbody><tr><td>14/09/2026 18:40</td><td>311</td><td>Laura Gómez</td><td>Email</td><td><span class="badge approved">Enviada</span></td></tr></tbody>
+  </table>
+</section>
+
+<section id="certificacion" class="screen">
+  <h2>Certificación NAC-2026</h2>
+  <div class="card">
+    <h3>Regla de elegibilidad</h3>
+    <p>El sistema utiliza <b>Estabilidad de Competencias</b> y conserva evidencia histórica. Un piloto con estado inestable no puede ser asignado a un vuelo operativo hasta completar revisión o recertificación.</p>
+    <div class="alert ok"><b>Cumplimiento activo:</b> la asignación consulta el estado de certificación antes de habilitar el botón de confirmación.</div>
+  </div>
+</section>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const pilots={
+"402":[
+{name:"Laura Gómez",avg:92.3,exp:88,final:91.0,cert:"Estable"},
+{name:"Andrés Rojas",avg:89.0,exp:96,final:91.1,cert:"Estable"},
+{name:"Camilo Ruiz",avg:81.7,exp:70,final:78.2,cert:"Inestable"}],
+"311":[
+{name:"Laura Gómez",avg:92.3,exp:88,final:91.0,cert:"Estable"},
+{name:"Camilo Ruiz",avg:81.7,exp:70,final:78.2,cert:"Inestable"}]
+};
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.target)));
+function go(id){
+ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
+ document.getElementById(id).classList.add('active');
+}
+function flightChanged(){
+ const f=document.getElementById('flight').value,w=document.getElementById('weatherBox'),p=document.getElementById('pilot');
+ p.innerHTML='<option value="">Seleccione...</option>';
+ if(!f){w.innerHTML='';return}
+ if(f==="402")w.innerHTML='<div class="alert"><b>Alerta meteorológica activa:</b> tormenta eléctrica severa. Se priorizan pilotos con entrenamiento compatible con clima extremo.</div>';
+ else w.innerHTML='<div class="alert ok"><b>Sin alerta meteorológica activa.</b> Continúa la lógica normal de asignación.</div>';
+ pilots[f].forEach((x,i)=>{const o=document.createElement('option');o.value=i;o.textContent=x.name+(x.cert==="Inestable"?" - NO ELEGIBLE":"");p.appendChild(o)});
+ document.getElementById('pilotInfo').textContent='';
+}
+function reviewPilot(){
+ const f=document.getElementById('flight').value,idx=document.getElementById('pilot').value;
+ if(f===""||idx===""){toast('Seleccione un vuelo y un piloto.');return}
+ const x=pilots[f][idx];
+ document.getElementById('pilotInfo').innerHTML=`Promedio 3 simulaciones: <b>${x.avg}</b> | Experiencia normalizada: <b>${x.exp}</b> | Puntaje final 70/30: <b>${x.final}</b> | Certificación: <b>${x.cert}</b>`;
+}
+function assignPilot(){
+ const f=document.getElementById('flight').value,idx=document.getElementById('pilot').value;
+ if(f===""||idx===""){toast('Debe seleccionar vuelo y piloto antes de confirmar.');return}
+ const x=pilots[f][idx];
+ if(x.cert!=="Estable"){toast('Asignación bloqueada: el piloto no cumple Estabilidad de Competencias NAC-2026.');return}
+ const now='14/09/2026 19:38';
+ const row=document.createElement('tr');
+ row.innerHTML=`<td>${now}</td><td>${f}</td><td>${x.name}</td><td>Teams + Email</td><td><span class="badge approved">Enviada</span></td>`;
+ document.querySelector('#notifTable tbody').prepend(row);
+ toast(`Asignación confirmada. Notificación automática enviada a ${x.name}.`);
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',3400)}
+</script>
+</body>
+</html>
